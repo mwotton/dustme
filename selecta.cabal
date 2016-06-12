@@ -1,0 +1,60 @@
+name:                selecta
+version:             0.1.0.0
+synopsis:            Initial project template from stack
+description:         Please see README.md
+homepage:            https://github.com/mwotton/selecta#readme
+license:             BSD3
+license-file:        LICENSE
+author:              Mark Wotton
+maintainer:          mwotton@gmail.com
+copyright:           AllRightsReserved
+category:            Web
+build-type:          Simple
+-- extra-source-files:
+cabal-version:       >=1.10
+
+library
+  hs-source-dirs:      src
+  exposed-modules:     Selecta
+                       Selecta.Score
+                       Selecta.Types
+                       Selecta.Search
+                       Selecta.Text
+                       Selecta.Renderer
+                       Selecta.TTY
+  build-depends: ansi-wl-pprint
+               , base >= 4.7 && < 5
+               , safe
+               , attoparsec
+               , bytestring
+               , terminfo >= 0.4.0.2 && < 0.5
+               , text
+               , extra
+               , unordered-containers
+               , containers
+               , hashable
+               , semigroups
+
+  default-language:    Haskell2010
+
+executable selecta-exe
+  hs-source-dirs:      app
+  main-is:             Main.hs
+  ghc-options:         -threaded -rtsopts -with-rtsopts=-N
+  build-depends:       base
+                     , selecta
+  default-language:    Haskell2010
+
+test-suite selecta-test
+  type:                exitcode-stdio-1.0
+  hs-source-dirs:      test
+  main-is:             Spec.hs
+  build-depends:       base
+                     , hspec
+                     , selecta
+  ghc-options:         -threaded -rtsopts -with-rtsopts=-N
+  default-language:    Haskell2010
+
+source-repository head
+  type:     git
+  location: https://github.com/mwotton/selecta

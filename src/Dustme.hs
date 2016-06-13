@@ -7,7 +7,6 @@ import           Control.DeepSeq          (force)
 import           Control.Exception        (bracket, evaluate)
 import qualified Data.Text                as T
 import qualified Data.Text.IO             as TIO
-import           Debug.Trace              (trace)
 import           Dustme.Renderer
 import           Dustme.Search
 import           Dustme.TTY               (withTTY)

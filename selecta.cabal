@@ -21,19 +21,22 @@ library
                        Selecta.Search
                        Selecta.Renderer
                        Selecta.TTY
-  build-depends: ansi-wl-pprint
-               , ansi-terminal
-               , base >= 4.7 && < 5
-               , safe
+  build-depends: ansi-terminal
+               , ansi-wl-pprint
+               , async
                , attoparsec
+               , base >= 4.7 && < 5
                , bytestring
+               , containers
+               , deepseq
+               , extra
+               , hashable
+               , safe
+               , semigroups
                , terminfo >= 0.4.0.2 && < 0.5
                , text
-               , extra
                , unordered-containers
-               , containers
-               , hashable
-               , semigroups
+
 
   default-language:    Haskell2010
 

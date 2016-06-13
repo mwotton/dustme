@@ -23,7 +23,6 @@ buildMatch width selected match current =
       before = ttext $ T.take (matchStart match) fulltext
       matching = ttext $ T.drop (matchStart match) (T.take (matchEnd match + 1) fulltext)
       end = ttext $ T.drop (matchEnd match + 1) fulltext
-      ttext = text . T.unpack
   in normal before <> highlight matching <> normal end
 
 tshow :: Show a => a -> T.Text
@@ -35,9 +34,10 @@ ttext = text . T.unpack
 -- renderSearch :: TTY -> Int -> [Match] -> IO ()
 renderSearch tty index matches (Search search) = do
   let width = getWidth tty
+      height = getHeight tty
       body :: Doc
       body = linebreak <> (mconcat . intersperse linebreak
-             $ zipWith (buildMatch width index) matches [0..])
+             $ zipWith (buildMatch width index) matches [0..height - 2])
       searchLine :: T.Text
       searchLine =  tshow (length matches) <> " > " <> search
       h = ttyHandle tty
@@ -49,4 +49,4 @@ renderSearch tty index matches (Search search) = do
   termPrint tty (ttext searchLine)
   hShowCursor h
 
-termPrint (TTY handle term _ ) = hPutDoc handle
+termPrint (TTY handle term _ _ ) = hPutDoc handle

@@ -43,7 +43,7 @@ applyOp ::  [Text] ->  SearchOp -> Search -> SearchResult -> (Search,[Text])
 applyOp candidates op (Search st) matches =
   case op of
     AddText t ->  ( Search (st <> t)
-                  , (map matchText matches))
+                  , map matchText matches)
     Backspace ->  ( Search (T.dropEnd 1 st)
                   , candidates)
     DeleteWord -> ( Search $ T.dropWhileEnd (not . isBoundaryChar) st

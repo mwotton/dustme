@@ -1,16 +1,20 @@
 {-# LANGUAGE DeriveGeneric #-}
 module Selecta.Types where
-import           Data.Hashable           (Hashable)
-import           Data.HashMap.Strict     (HashMap)
-import           Data.Text               (Text)
+import           Control.Concurrent.Async (Async)
+import           Control.Concurrent.MVar  (MVar)
+import           Control.DeepSeq          (NFData)
+import           Data.Hashable            (Hashable)
+import           Data.HashMap.Strict      (HashMap)
+import           Data.Text                (Text)
 import           GHC.Generics
 import           System.Console.Terminfo
-import           System.IO               (Handle)
+import           System.IO                (Handle)
 
 data  TTY = TTY
   { ttyHandle     :: Handle
   , ttyTerm       :: Terminal
-  , ttyGetCommand :: IO Command
+  , ttyGetCommand :: MVar Command
+  , ttyProcess    :: Async ()
   }
 
 data Match =
@@ -19,8 +23,9 @@ data Match =
   , matchStart :: Int
   , matchEnd   :: Int
   , matchText  :: Text
-  } deriving (Show,Eq)
+  } deriving (Show,Eq,Generic)
 
+instance NFData Match
 
 newtype Search = Search Text
   deriving (Generic, Eq, Show)

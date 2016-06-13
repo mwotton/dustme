@@ -5,9 +5,7 @@ import           Data.List          (minimumBy, sortBy)
 import           Data.List.NonEmpty (NonEmpty (..))
 import           Data.Map           (Map)
 import qualified Data.Map           as Map
-import           Data.Maybe         (mapMaybe)
-import           Data.Maybe         (listToMaybe)
-import           Data.Maybe         (fromMaybe)
+import           Data.Maybe         (fromMaybe, listToMaybe, mapMaybe)
 import           Data.Ord           (comparing)
 import           Data.Set           (Set)
 import qualified Data.Set           as Set
@@ -39,15 +37,15 @@ mkMatch t (xs,cost) = Just $ Match cost (head xs) (last xs) t
 bestMatches :: Text -> Text -> [Match] -- [([Int], Int)]
 bestMatches t keys =
     sortBy matchComparison
-  $ mapMaybe (mkMatch keys)
-  $ map (\(p,_) -> (reverse p, scorePath p))
-  $ T.foldl' search ([([],0)]) t
+  $ mapMaybe (mkMatch keys . (\(p,_) -> (reverse p, scorePath p)))
+  $ T.foldl' search [([],0)] t
   where
     dict = getIndices keys
 
     initials :: Set Int
     -- we add 1 because we want the value _after_ whitespace.
-    initials = Set.unions . map ((Set.map (+1)) . snd)  . Map.toList $ Map.filterWithKey (\k _ -> isSpace k)  dict
+    initials = Set.unions . map (Set.map (+1) . snd)  . Map.toList
+             $ Map.filterWithKey (\k _ -> isSpace k)  dict
 
     scorePath :: [Int] -> Int
     scorePath [] = 10000
@@ -57,7 +55,6 @@ bestMatches t keys =
       | otherwise             = x - y + scorePath (y:xs)
 
     search :: [([Int], Int)] -> Char -> [([Int], Int)]
-          -- here we may have to do recurse.
     search paths c =
       concatMap
       (\(path, earliest) ->

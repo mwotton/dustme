@@ -8,6 +8,10 @@ module Selecta.TTY
   )
 where
 import           Control.Applicative              ((<|>))
+import           Control.Concurrent               (newEmptyMVar, putMVar)
+import           Control.Concurrent.Async         (async, cancel)
+import           Control.Exception                (bracket)
+import           Control.Monad                    (forever)
 import           Data.Attoparsec.ByteString.Char8
 import qualified Data.ByteString.Char8            as BS8
 import           Data.IORef
@@ -23,12 +27,17 @@ import           System.IO                        (BufferMode (NoBuffering),
 import qualified Text.PrettyPrint.ANSI.Leijen     as PP
 
 withTTY :: FilePath -> (TTY -> IO ()) -> IO ()
-withTTY fp f  = do
-  t <- setupTermFromEnv
-  h <- openFile "/dev/tty" ReadWriteMode
-  hSetBuffering h NoBuffering
-  p <- mkCommandReader h
-  f (TTY h t p)
+withTTY fp  = bracket setup teardown
+  where setup = do
+          t <- setupTermFromEnv
+          h <- openFile "/dev/tty" ReadWriteMode
+          hSetBuffering h NoBuffering
+          mv <- newEmptyMVar
+          p <- mkCommandReader h
+          reader <- async $ forever  (p >>= putMVar mv)
+          return (TTY h t mv reader)
+
+        teardown (TTY h t mv reader) = cancel reader
 
 mkCommandReader h = parser <$> newIORef ""
   where
@@ -37,18 +46,18 @@ mkCommandReader h = parser <$> newIORef ""
       res <- parseWith (getFromHandle h) commParser leftovers
       case res of
         Fail s a b -> error (show ("can't happen error", s, a, b))
-        Partial _ -> error (show ("shouldn't happen - parseWith can resupply"))
+        Partial _ -> error "shouldn't happen - parseWith can resupply"
         Done bs a -> do
           writeIORef ref bs
           return a
 
 commParser = choice
-  [(Edit . const Backspace <$> string "\DEL")
-  ,(Edit . const DeleteWord <$> string "\ETB")
-  ,const Down <$> string "\SO"
-  ,const Up <$> string "\DLE"
-  ,const Accept <$> string "\n"
-  ,(Edit . AddText . T.pack . listify <$> anyChar)
+  [ Edit . const Backspace <$> string "\DEL"
+  , Edit . const DeleteWord <$> string "\ETB"
+  , const Down <$> string "\SO"
+  , const Up <$> string "\DLE"
+  , const Accept <$> string "\n"
+  , Edit . AddText . T.pack . listify <$> anyChar
   ]
   where listify a = [a]
 -- still need to treat any of these specially?

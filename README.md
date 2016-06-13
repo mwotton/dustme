@@ -17,7 +17,7 @@ and
 cat /usr/share/dict/words | dustme
 ```
 
-to compare - dustme is considerably snappier.)
+to compare.)
 
 While it's still not finished (Selecta's colouring method is more
 robust under different terminals), it's usable.

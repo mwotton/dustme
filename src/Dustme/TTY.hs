@@ -1,8 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Selecta.TTY
+module Dustme.TTY
   ( withTTY
   , TermOutput(..)
-  , termText
   , getWidth
   , getHeight
   )
@@ -18,7 +17,7 @@ import           Data.IORef
 import           Data.Maybe                       (fromMaybe)
 import           Data.Text                        (Text)
 import qualified Data.Text                        as T
-import           Selecta.Types
+import           Dustme.Types
 import           System.Console.Terminfo
 import           System.IO                        (BufferMode (NoBuffering),
                                                    Handle (..), IOMode (..),

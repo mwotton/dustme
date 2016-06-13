@@ -1,8 +1,8 @@
 {-# LANGUAGE OverloadedStrings #-}
-import           Selecta
-import           Selecta.Score
-import           Selecta.Search
-import           Selecta.Types
+import           Dustme
+import           Dustme.Score
+import           Dustme.Search
+import           Dustme.Types
 import           Test.Hspec
 
 main :: IO ()

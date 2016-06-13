@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Selecta where
+module Dustme where
 
 import           Control.Concurrent       (newEmptyMVar, takeMVar)
 import           Control.Concurrent.Async (async, cancel, race)
@@ -8,13 +8,13 @@ import           Control.Exception        (bracket, evaluate)
 import qualified Data.Text                as T
 import qualified Data.Text.IO             as TIO
 import           Debug.Trace              (trace)
-import           Selecta.Renderer
-import           Selecta.Search
-import           Selecta.TTY              (withTTY)
-import           Selecta.Types
+import           Dustme.Renderer
+import           Dustme.Search
+import           Dustme.TTY               (withTTY)
+import           Dustme.Types
 import           System.IO
 
-selecta config = do
+dustme config = do
   hSetBuffering stdout NoBuffering
   input <- T.lines <$> TIO.getContents
   let applyOp' = applyOp input

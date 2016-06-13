@@ -1,12 +1,11 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Selecta.Renderer where
+module Dustme.Renderer where
 import           Data.Char                    (chr)
 import           Data.List                    (intersperse)
 import           Data.Monoid                  ((<>))
 import qualified Data.Text                    as T
-import           Selecta.TTY
-import           Selecta.Types
-
+import           Dustme.TTY
+import           Dustme.Types
 import           System.Console.ANSI          (hClearFromCursorToScreenEnd,
                                                hClearLine, hClearScreen,
                                                hCursorDown, hCursorUp,

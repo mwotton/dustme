@@ -1,5 +1,5 @@
 {-# LANGUAGE DeriveGeneric #-}
-module Selecta.Types where
+module Dustme.Types where
 import           Control.Concurrent.Async (Async)
 import           Control.Concurrent.MVar  (MVar)
 import           Control.DeepSeq          (NFData)

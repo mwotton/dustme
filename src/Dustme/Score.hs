@@ -1,5 +1,5 @@
 {-# LANGUAGE ScopedTypeVariables #-}
-module Selecta.Score where
+module Dustme.Score where
 import           Data.Char          (isSpace, toLower)
 import           Data.List          (minimumBy, sortBy)
 import           Data.List.NonEmpty (NonEmpty (..))
@@ -11,9 +11,9 @@ import           Data.Set           (Set)
 import qualified Data.Set           as Set
 import           Data.Text          (Text, pack)
 import qualified Data.Text          as T
+import           Dustme.Types
 import           Prelude            hiding ((!!))
 import           Safe
-import           Selecta.Types
 
 type Score = Int
 type Position = Int

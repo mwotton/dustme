@@ -1,7 +1,5 @@
 {-# LANGUAGE TupleSections #-}
-module Selecta.Search where
-
-
+module Dustme.Search where
 
 import           Control.Monad       (guard)
 import           Data.Char           (isSpace)
@@ -15,9 +13,9 @@ import           Data.Ord            (comparing)
 import           Data.Text           (Text)
 import qualified Data.Text           as T
 import           Debug.Trace
+import           Dustme.Score        (bestMatches, getIndices, matchComparison)
+import           Dustme.Types
 import           Safe                (headMay)
-import           Selecta.Score       (bestMatches, getIndices, matchComparison)
-import           Selecta.Types
 
 isBoundaryChar = isSpace
 

@@ -19,10 +19,10 @@ library
                        Selecta.Score
                        Selecta.Types
                        Selecta.Search
-                       Selecta.Text
                        Selecta.Renderer
                        Selecta.TTY
   build-depends: ansi-wl-pprint
+               , ansi-terminal
                , base >= 4.7 && < 5
                , safe
                , attoparsec

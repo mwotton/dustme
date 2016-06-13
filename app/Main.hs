@@ -3,7 +3,7 @@ module Main where
 import           Selecta
 
 main :: IO ()
-main = print "calling" >> selecta 1
+main = selecta 1
 
 -- class Selecta
 --   VERSION = [0, 0, 6]

@@ -14,9 +14,9 @@ import           Data.Monoid         ((<>))
 import           Data.Ord            (comparing)
 import           Data.Text           (Text)
 import qualified Data.Text           as T
-import           Debug.Trace         (trace)
+import           Debug.Trace
 import           Safe                (headMay)
-import           Selecta.Score       (bestMatches, getIndices)
+import           Selecta.Score       (bestMatches, getIndices, matchComparison)
 import           Selecta.Types
 
 isBoundaryChar = isSpace
@@ -27,27 +27,22 @@ getResults :: [Text]
            -> SearchCache
            -> Search
            -> (SearchResult, SearchCache)
-getResults candidates cache search = trace "getResults" $ case HM.lookup search cache of
-  Nothing -> let result = runSearch search (trace (show ("candidates",candidates)) candidates) in
+getResults candidates cache search = case HM.lookup search cache of
+  Nothing -> let result = runSearch search candidates in
                (result, HM.insert search result cache)
   Just cached -> (cached, cache)
 
+
 runSearch :: Search -> [Text] -> SearchResult
-runSearch (Search st) candidates = sortBy (comparing matchScore) completions
-  where completions = mapMaybe (\c -> headMay . mapMaybe (mkMatch c) . bestMatches st $ getIndices c) candidates
+runSearch (Search st) candidates =
+  sortBy matchComparison $
+  mapMaybe (headMay .  bestMatches st) candidates
 
-mkMatch :: Text -> ([Int], Int) -> Maybe Match
-mkMatch _ ([],_) = Nothing
-mkMatch t (xs,cost) = Just $ Match cost (head xs) (last xs) t
-
-traceshow :: Show a => a -> b -> b
-traceshow x y = trace (show x) y
 
 applyOp ::  [Text] ->  SearchOp -> Search -> SearchResult -> (Search,[Text])
 applyOp candidates op (Search st) matches =
   case op of
-    AddText t ->  ( trace ("concat") . traceshow ("st",st) . traceshow ("t",t)
-                    $ Search (st <> t)
+    AddText t ->  ( Search (st <> t)
                   , (map matchText matches))
     Backspace ->  ( Search (T.dropEnd 1 st)
                   , candidates)

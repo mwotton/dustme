@@ -13,18 +13,9 @@ import           Data.Set           (Set)
 import qualified Data.Set           as Set
 import           Data.Text          (Text, pack)
 import qualified Data.Text          as T
-import           Debug.Trace
-import           Debug.Trace        (trace)
 import           Prelude            hiding ((!!))
 import           Safe
 import           Selecta.Types
--- headMay [] = Nothing
--- headMay (x:_) = Just x
-
-
-data SearchTree a
-  = Tree [(a, SearchTree a)]
-  | Leaf
 
 type Score = Int
 type Position = Int
@@ -36,13 +27,23 @@ getIndices =
       (i+1, Map.insertWith Set.union (toLower c) (Set.singleton i) dict))
   (0, Map.empty)
 
+matchComparison m1 m2 =
+  case compare (matchScore m1) (matchScore m2) of
+    EQ -> compare (matchStart m1) (matchStart m2)
+    x -> x
 
-bestMatches :: Text -> Map Char (Set Int) -> [([Int], Int)]
-bestMatches t dict =
-  sortBy (comparing snd)
+mkMatch :: Text -> ([Int], Int) -> Maybe Match
+mkMatch _ ([],_) = Nothing
+mkMatch t (xs,cost) = Just $ Match cost (head xs) (last xs) t
+
+bestMatches :: Text -> Text -> [Match] -- [([Int], Int)]
+bestMatches t keys =
+    sortBy matchComparison
+  $ mapMaybe (mkMatch keys)
   $ map (\(p,_) -> (reverse p, scorePath p))
   $ T.foldl' search ([([],0)]) t
   where
+    dict = getIndices keys
 
     initials :: Set Int
     -- we add 1 because we want the value _after_ whitespace.
@@ -69,11 +70,3 @@ okPaths :: Ord a => a -> Set a -> Set a
 okPaths x xs = case Set.splitMember x xs of
   (_,True,b) -> Set.insert x b
   (_,_,b)    -> b
-
--- score isBoundary     (s1,e1) s   =
---   let deflt = e1-s1 in
---     case atMay s (length s - 1)  of
---       Nothing -> deflt
---       Just x -> if isBoundary x then 1 else deflt
-
--- charBoundary x = x==' '

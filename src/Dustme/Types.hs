@@ -1,7 +1,6 @@
 {-# LANGUAGE DeriveGeneric #-}
 module Dustme.Types where
 import           Control.Concurrent.Async (Async)
-import           Control.Concurrent.MVar  (MVar)
 import           Control.DeepSeq          (NFData)
 import           Data.Hashable            (Hashable)
 import           Data.HashMap.Strict      (HashMap)
@@ -10,12 +9,6 @@ import           GHC.Generics
 import           System.Console.Terminfo
 import           System.IO                (Handle)
 
-data  TTY = TTY
-  { ttyHandle     :: Handle
-  , ttyTerm       :: Terminal
-  , ttyGetCommand :: MVar Command
-  , ttyProcess    :: Async ()
-  }
 
 data Match =
   Match
@@ -26,6 +19,12 @@ data Match =
   } deriving (Show,Eq,Generic)
 
 instance NFData Match
+
+data Display a =
+  Display { dispLinebreak  :: a
+          , dispSelected   :: (Text -> a, Text -> a)
+          , dispUnselected :: (Text -> a, Text -> a)
+          }
 
 newtype Search = Search Text
   deriving (Generic, Eq, Show)

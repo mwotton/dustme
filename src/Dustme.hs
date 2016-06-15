@@ -1,29 +1,34 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Dustme where
 
-import           Control.Concurrent       (newEmptyMVar, takeMVar)
-import           Control.Concurrent.Async (async, cancel, race)
-import           Control.DeepSeq          (force)
-import           Control.Exception        (bracket, evaluate)
-import qualified Data.Text                as T
-import qualified Data.Text.IO             as TIO
+import           Control.Concurrent           (newEmptyMVar, takeMVar)
+import           Control.Concurrent.Async     (async, cancel, race)
+import           Control.DeepSeq              (force)
+import           Control.Exception            (bracket, evaluate)
+import qualified Data.Text                    as T
+import qualified Data.Text.IO                 as TIO
+import           Dustme.DocDisplay            (docDisplay)
+import           Dustme.Parser                (mkCommandReader)
 import           Dustme.Renderer
 import           Dustme.Search
-import           Dustme.TTY               (withTTY)
+import           Dustme.TTY                   (TTY (..), renderSearch, withTTY)
 import           Dustme.Types
 import           System.IO
+import           Text.PrettyPrint.ANSI.Leijen (Doc)
 
 dustme config = do
   hSetBuffering stdout NoBuffering
   input <- T.lines <$> TIO.getContents
   let applyOp' = applyOp input
-  withTTY "/dev/tty0" (setup applyOp' (map mkTrivialMatch input))
+  withTTY "/dev/tty0" mkCommandReader
+    (setup applyOp' (map mkTrivialMatch input))
 
 mkTrivialMatch = Match 10000 1 0
 
 setup applyOp' initMatch tty = go 0 initMatch (Search "") emptyCache
   where
     getCommand = takeMVar (ttyGetCommand tty)
+    buildDoc = buildMatches docDisplay
 
     go :: Int -> SearchResult -> Search -> SearchCache -> IO ()
     go    index  matches'         search    cache = do
@@ -36,7 +41,7 @@ setup applyOp' initMatch tty = go 0 initMatch (Search "") emptyCache
       -- of keys in in quick succession, the UI will remain responsive.
       r <- race (evaluate $ force matches) getCommand
       s <- case r of
-             Left matches' -> renderSearch tty index matches search >> getCommand
+             Left matches' -> renderSearch buildDoc tty index matches search >> getCommand
              Right x -> return x
 
       case s of

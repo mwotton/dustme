@@ -20,6 +20,8 @@ library
                        Dustme.Types
                        Dustme.Search
                        Dustme.Renderer
+                       Dustme.Parser
+                       Dustme.DocDisplay
                        Dustme.TTY
   build-depends: ansi-terminal
                , ansi-wl-pprint

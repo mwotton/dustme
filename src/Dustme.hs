@@ -20,7 +20,7 @@ dustme config = do
   hSetBuffering stdout NoBuffering
   input <- T.lines <$> TIO.getContents
   let applyOp' = applyOp input
-  withTTY "/dev/tty0" mkCommandReader
+  withTTY "/dev/tty" mkCommandReader
     (setup applyOp' (map mkTrivialMatch input))
 
 mkTrivialMatch = Match 10000 1 0

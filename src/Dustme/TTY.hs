@@ -36,7 +36,7 @@ withTTY ::  FilePath
 withTTY fp mkCommandReader  = bracket setup teardown
   where setup = do
           t <- setupTermFromEnv
-          h <- openFile fp WriteMode
+          h <- openFile fp ReadWriteMode
           hSetBuffering h NoBuffering
           mv <- newEmptyMVar
           p <- mkCommandReader (getFromHandle h)

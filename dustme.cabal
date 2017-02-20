@@ -27,7 +27,8 @@ library
                , ansi-wl-pprint
                , async
                , attoparsec
-               , base >= 4.7 && < 5
+               , base >= 4.7 && < 6
+               , binary >= 0.8.3.0
                , bytestring
                , containers
                , deepseq

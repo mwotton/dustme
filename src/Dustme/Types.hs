@@ -10,15 +10,15 @@ import           System.Console.Terminfo
 import           System.IO                (Handle)
 
 
-data Match =
+data Match a =
   Match
-  { matchScore :: Int
+  { matchScore :: a
   , matchStart :: Int
   , matchEnd   :: Int
   , matchText  :: Text
   } deriving (Show,Eq,Generic)
 
-instance NFData Match
+instance (NFData a) => NFData (Match a)
 
 data Display a =
   Display { dispLinebreak  :: a
@@ -31,7 +31,7 @@ newtype Search = Search Text
 
 instance Hashable Search
 
-type SearchResult = [Match]
+type SearchResult a = [Match a]
 
 data SearchOp = AddText Text
               | Backspace
@@ -44,4 +44,4 @@ data Command
   | Up
   | Down
 
-type SearchCache = HashMap Search SearchResult
+type SearchCache a = HashMap Search (SearchResult a)

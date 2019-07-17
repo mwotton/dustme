@@ -15,7 +15,7 @@ buildMatches :: Monoid a
              -> Int
              -> Int
              -> Int
-             -> [Match]
+             -> [Match (Int)]
              -> Search
              -> (a, T.Text)
 buildMatches display width height selected matches (Search search) =

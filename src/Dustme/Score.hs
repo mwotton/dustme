@@ -30,16 +30,20 @@ matchComparison m1 m2 =
     EQ -> compare (matchStart m1) (matchStart m2)
     x -> x
 
-mkMatch :: Text -> ([Int], Int) -> Maybe Match
+mkMatch :: Text -> ([Int], Int) -> Maybe (Match Int)
 mkMatch _ ([],_) = Nothing
 mkMatch t (xs,cost) = Just $ Match cost (head xs) (last xs) t
 
-bestMatches :: Text -> Text -> [Match] -- [([Int], Int)]
+bestMatches :: Text -> Text -> [Match Int] -- [([Int], Int)]
 bestMatches t keys =
     sortBy matchComparison
-  $ mapMaybe (mkMatch keys . (\(p,_) -> (reverse p, scorePath p)))
-  $ T.foldl' search [([],0)] t
+  $ scoreMatches keys
+  $ findPaths t
   where
+    scoreMatches keys = mapMaybe (mkMatch keys . (\(p,_) -> (reverse p, scorePath p)))
+
+
+
     dict = getIndices keys
 
     initials :: Set Int
@@ -51,8 +55,12 @@ bestMatches t keys =
     scorePath [] = 10000
     scorePath [_] = 0
     scorePath (x:y:xs)
+      -- hm. this is a little bit wrong: we're only checking that it
+      -- has initials, not that they're in the right order
       | Set.member y initials = 1 + scorePath (y:xs)
       | otherwise             = x - y + scorePath (y:xs)
+
+    findPaths t = T.foldl' search [([],0)] t
 
     search :: [([Int], Int)] -> Char -> [([Int], Int)]
     search paths c =
@@ -61,9 +69,12 @@ bestMatches t keys =
          let next = Set.toList $ okPaths earliest continuations
          in map (\j -> (j:path, j+1)) next
       ) paths
-      where continuations = fromMaybe Set.empty $ Map.lookup (toLower c) dict
+      where
+        continuations :: Set Int
+        continuations = fromMaybe Set.empty $ Map.lookup (toLower c) dict
 
 okPaths :: Ord a => a -> Set a -> Set a
-okPaths x xs = case Set.splitMember x xs of
-  (_,True,b) -> Set.insert x b
-  (_,_,b)    -> b
+okPaths x xs =
+  case Set.splitMember x xs of
+    (_,True,b) -> Set.insert x b
+    (_,_,b)    -> b

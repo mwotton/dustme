@@ -30,11 +30,11 @@ setup applyOp' initMatch tty = go 0 initMatch (Search "") emptyCache
     getCommand = takeMVar (ttyGetCommand tty)
     buildDoc = buildMatches docDisplay
 
-    go :: Int -> SearchResult -> Search -> SearchCache -> IO ()
+    go :: Int -> SearchResult Int -> Search -> SearchCache Int -> IO ()
     go    index  matches'         search    cache = do
       let matches = case search of
             (Search "") -> initMatch
-            _ -> matches'
+            _           -> matches'
 
       -- the idea here is that that ttyGetCommand can always take
       -- priority over printing. This means that if we type a bunch

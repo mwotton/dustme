@@ -21,21 +21,21 @@ isBoundaryChar = isSpace
 emptyCache = HM.empty
 
 getResults :: [Text]
-           -> SearchCache
+           -> SearchCache Int
            -> Search
-           -> (SearchResult, SearchCache)
+           -> (SearchResult Int, SearchCache Int)
 getResults candidates cache search = case HM.lookup search cache of
   Nothing -> let result = runSearch search candidates in
                (result, HM.insert search result cache)
   Just cached -> (cached, cache)
 
-runSearch :: Search -> [Text] -> SearchResult
+runSearch :: Search -> [Text] -> SearchResult Int
 runSearch (Search st) candidates =
   sortBy matchComparison $
   mapMaybe (headMay .  bestMatches st) candidates
 
 
-applyOp ::  [Text] ->  SearchOp -> Search -> SearchResult -> (Search,[Text])
+applyOp ::  [Text] ->  SearchOp -> Search -> SearchResult a -> (Search,[Text])
 applyOp candidates op (Search st) matches =
   case op of
     AddText t ->  ( Search (st <> t)

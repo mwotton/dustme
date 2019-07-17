@@ -1,6 +1,7 @@
 module Main where
 
 import           Dustme
+import           Dustme.Config
 
 main :: IO ()
-main = dustme 1
+main = dustme defaultConfig

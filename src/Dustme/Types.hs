@@ -9,7 +9,6 @@ import           GHC.Generics
 import           System.Console.Terminfo
 import           System.IO                (Handle)
 
-
 data Match a =
   Match
   { matchScore :: a

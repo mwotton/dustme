@@ -7,21 +7,23 @@ import           Control.DeepSeq              (force)
 import           Control.Exception            (bracket, evaluate)
 import qualified Data.Text                    as T
 import qualified Data.Text.IO                 as TIO
+import           System.IO
+import           Text.PrettyPrint.ANSI.Leijen (Doc)
+
+import           Dustme.Config
 import           Dustme.DocDisplay            (docDisplay)
 import           Dustme.Parser                (mkCommandReader)
 import           Dustme.Renderer
 import           Dustme.Search
 import           Dustme.TTY                   (TTY (..), renderSearch, withTTY)
 import           Dustme.Types
-import           System.IO
-import           Text.PrettyPrint.ANSI.Leijen (Doc)
 
+dustme :: Config -> IO ()
 dustme config = do
   hSetBuffering stdout NoBuffering
   input <- T.lines <$> TIO.getContents
-  let applyOp' = applyOp input
   withTTY "/dev/tty" mkCommandReader
-    (setup applyOp' (map mkTrivialMatch input))
+    (setup (applyOp input) (map mkTrivialMatch input))
 
 mkTrivialMatch = Match 10000 1 0
 
